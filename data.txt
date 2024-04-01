@@ -1,0 +1,1 @@
+{'01200300040000': {'auth': {'username': 'Babeet', 'password': 'aaaaaa', 'role': 'STAFF'}, 'info': {'first_name': 'SuperUser', 'last_name': '', 'phone_no': '', 'email': '', 'date_of_birth': '', 'address': '', 'date_of_register': '', 'balance': 0}}}
