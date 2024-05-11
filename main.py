@@ -18,10 +18,20 @@ data = {
             'date_of_birth':'',
             'address':'',
             'date_of_register':'',
-            'balance':0,
+        },
+        'account':{
+          'balance':0,
+          'type':'SBA', ##SBA for Saving Account CAA for current account
+        },
+        'transaction':{
+            'amount':0,
+            'type':'D',
+            'date':''
         }
     }
 }
+
+
 
 #read and store file content in dict if exixts else create file with default
 data_file = "./data.txt"
@@ -33,12 +43,13 @@ else:
     with open(data_file,'w+') as my_file:
         my_file.write(str(data))
 
-run = True
-last_acct_num = list(data.keys())[-1]
-next_acct_num = format(int(last_acct_num) + 1,'014d')
+list_acct_num = list(data.keys())
+list_acct_num.sort()
+last_acct_num = list_acct_num[-1]
 print(last_acct_num)
-print(next_acct_num)
 
+run = True
+#os.system('cls')
 greet()
 while run:
 #Choose Role to Login
@@ -59,11 +70,15 @@ while run:
         run = False
         continue  #Exits if user enters 4
     else:
+        os.system('cls')
         print(f"{login} is not a valid input")
+        continue
 
     #Loop For Logging in User
     run_Login_loop = True
+    
     while run_Login_loop:
+        os.system('cls')
         #Default Variable Initialize for Login
         is_acct_num_valid = False
         is_password_valid = False
@@ -86,14 +101,38 @@ while run:
             logged_in_user_name = get_username(data,account)
         else:
             print(f"Invalid Credintials For {login_role} login. Please Try again with correct credentials")
+            is_logged_in = False
 
         if is_logged_in:
             greet(logged_in_user_name)
+        #os.system('cls')
 
 #LOGIN COMPLETE
-        while is_logged_in:
-            if(login_role == "SUPERUSER"):
-                print("Logged In as SuperUser")
+        if(login_role == "SUPERUSER"):
+            while is_logged_in:
+                print("is_logged_in Loop")
+                #os.system('cls')
+                print("1.Create Staff Account")
+                print("0.Go Back")
+                staff_action = input()
+                validInputs = ["1","0"]
+                if staff_action == "0":
+                    is_logged_in = False
+                    continue
+                elif validateField(validInputs,staff_action):
+                    is_logged_in = True
+                else:
+                    print("Invalid Input")
+                    is_logged_in = False
+                
+                print(is_logged_in)
+                if (staff_action == "1"):
+                    data = create_account_instance(data,role="STAFF")
+                    print(data)
+                    
+                    
+
+
 
 
         
