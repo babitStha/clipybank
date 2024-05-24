@@ -1,14 +1,15 @@
 import os
-import datetime
+from datetime import datetime
 from helperFxn import *
-
+current_date = datetime.now().strftime('%d-%m-%Y')
+print("Current date:", current_date)
 #Default SuperUser Account
 data = {
     '01200300040000':{
         'auth':{
             'username':'username',
             'password':'aaaaaa',
-            'role':'SUPERUSER',
+            'role':'STAFF',
         },
         'info':{
             'first_name':'SuperUser',
@@ -20,18 +21,37 @@ data = {
             'date_of_register':'',
         },
         'account':{
-          'balance':0,
+          'balance':510,
           'type':'SBA', ##SBA for Saving Account CAA for current account
         },
         'transaction':{
-            'amount':0,
-            'type':'D',
-            'date':''
+            datetime.now().strftime('%d%m%y%H%M%S'):{
+            'amount':500,
+            'type':'C',
+            'date':datetime.now().strftime('%d-%m-%Y'),
+            'remarks':'Account Opening Balance'
+        },
+        '150524172326':{
+            'amount':10,
+            'type':'C',
+            'date':datetime.now().strftime('%d-%m-%Y'),
+            'remarks':'Account Opening Balance'
         }
     }
 }
 
+}
 
+def create_transaction(maindata:dict,acct_num:str):
+    tran_account =maindata[acct_num]
+    available_bal = tran_account.get("account").get("balance")
+    print("Your Available Balance is", available_bal)
+    print(" 1. WithDraw :")
+    print(" 2. Deposit :")
+    action = ("Please Choose an Option")
+    print(acct_num)
+
+create_transaction(data,"01200300040000")
 
 #read and store file content in dict if exixts else create file with default
 data_file = "./data.txt"
@@ -42,6 +62,16 @@ if os.path.exists(data_file):
 else:
     with open(data_file,'w+') as my_file:
         my_file.write(str(data))
+
+
+
+transaction_keys =list(data['01200300040000'].get('transaction'))
+print(transaction_keys)
+
+for key in transaction_keys:
+    print(data['01200300040000'].get('transaction').get(key))
+
+
 
 list_acct_num = list(data.keys())
 list_acct_num.sort()
@@ -78,7 +108,7 @@ while run:
     run_Login_loop = True
     
     while run_Login_loop:
-        os.system('cls')
+        #os.system('cls')
         #Default Variable Initialize for Login
         is_acct_num_valid = False
         is_password_valid = False
@@ -99,6 +129,7 @@ while run:
         if is_acct_num_valid and is_password_valid and is_role_valid:
             is_logged_in = True
             logged_in_user_name = get_username(data,account)
+            logged_in_account = account
         else:
             print(f"Invalid Credintials For {login_role} login. Please Try again with correct credentials")
             is_logged_in = False
@@ -114,41 +145,143 @@ while run:
                 #os.system('cls')
                 print("1.Create Staff Account")
                 print("0.Go Back")
-                staff_action = input()
+                user_action = input()
                 validInputs = ["1","0"]
-                if staff_action == "0":
+                if user_action == "0":
                     is_logged_in = False
                     continue
-                elif validateField(validInputs,staff_action):
+                elif validateField(validInputs,user_action):
                     is_logged_in = True
                 else:
                     print("Invalid Input")
                     is_logged_in = False
                 
                 print(is_logged_in)
-                if (staff_action == "1"):
-                    data = create_account_instance(data,role="STAFF")
-                    print(data)
+                if (user_action == "1"):
+                    [instance,created_acct,default_password] = create_account_instance(data,role="STAFF")
+                    data[created_acct] = instance[created_acct]
+                    print(f"Staff Account Created.\n Account Number :{created_acct} \n password :{default_password}")
+                    save_data_in_file('./data.txt',data)
+        #STAFF LOGIN
+        elif(login_role == "STAFF"):
+            while is_logged_in:
+                print("is_logged_in Loop")
+                #os.system('cls')
+                print("1.   Create Create Customer Account :")
+                print("2.   Print Acount Statement :")
+                print("3.   Maintain Account Details :")
+                print("0.Go Back")
+                
+                user_action = input("Please Choose An Option :")
+                validInputs = ["1","0","2","3"]
+                if user_action == "0":
+                    is_logged_in = False
+                    continue
+                elif validateField(validInputs,user_action):
+                    is_logged_in = True
+                else:
+                    print("Invalid Input")
+                    continue
+                
+                if (user_action == "1"):
+                    [instance,created_acct,default_password] = create_account_instance(data,role="CUSTOMER")
+                    data[created_acct] = instance[created_acct]
+                    print(f"Customer Account Created.\n Account Number :{created_acct} \n password :{default_password}")
+                    save_data_in_file('./data.txt',data)
+                elif(user_action == "2"):
+                    validated = False
+                    while not validated:
+                        acct_no = input("Enter Account Number to Print Statement:")
+                        if acct_no in list(data.keys()):
+                            validated = True
+                        else:
+                            validated = False
+                            print(f"{acct_no} does not Exist. ")
+                    validated = False
+                    while not validated:
+                        from_date = input("Enter From Date (DD-MM-YYYY):-")
+                        if (validateField([],from_date,"date")):
+                            validated = True
+                        else:
+                            validated = False
+                            print("Invalid Date Format. Please Enter Date in DD-MM-YYYY format")
+                    validated = False
+                    while not validated:
+                        to_date = input("Enter To Date (DD-MM-YYYY):-")
+                        if (validateField([],to_date,"date")):
+                            validated = True
+                        else:
+                            validated = False
+                            print("Invalid Date Format. Please Enter Date in DD-MM-YYYY format")
+                    statementList = get_transaction_in_range(data,acct_no,from_date,to_date)
+                    print(statementList)
+                    print_table(statementList)
+                    print("\n\n")
+                    input("Press Any Key To Return") 
+                elif(user_action == "3"):
+                    print("Maintain User Account")
+                    validated = False
+                    while not validated:
+                        acct_no = input("Enter Account Number to Maintain:")
+                        if acct_no in list(data.keys()):
+                            validated = True
+                        else:
+                            validated = False
+                            print(f"{acct_no} does not Exist. ")
+                    if acct_no and acct_no != "":
+                        update_account_details(data,acct_no)
+                        acct_no = ""
+        elif(login_role == "CUSTOMER"):
+            while is_logged_in:
+                print("is_logged_in Loop")
+                #os.system('cls')
+                print("1.   Create a Transaction :")
+                print("2.   Print Acount Statement :")
+                print("3.   Maintain Account Details :")
+                print("0.Go Back")
+                
+                user_action = input("Please Choose An Option :")
+                validInputs = ["1","0","2","3"]
+                if user_action == "0":
+                    is_logged_in = False
+                    continue
+                elif validateField(validInputs,user_action):
+                    is_logged_in = True
+                else:
+                    print("Invalid Input")
+                    continue
+                
+                if (user_action == "1"):
+                    #Create a Transaction
+                    create_transaction(data[logged_in_account])
                     
-                    
-
-
-
-
-        
-
-
-
-
-
-
-"""
-print("Utils Function")
-data['01200300040000']['auth']['username'] = "Babeet"
-print(get_username(data,"01200300040000"))
-print(get_userpassword(data,"01200300040000"))
-print(get_auth_info(data,'01200300040000').get('username'))
-print(get_user_info(data,'01200300040000'))
-
-save_data_in_file(data_file,data)
-"""
+                    save_data_in_file('./data.txt',data)
+                elif(user_action == "2"):
+                    validated = False
+                    while not validated:
+                        from_date = input("Enter From Date (DD-MM-YYYY):-")
+                        if (validateField([],from_date,"date")):
+                            validated = True
+                        else:
+                            validated = False
+                            print("Invalid Date Format. Please Enter Date in DD-MM-YYYY format")
+                    validated = False
+                    while not validated:
+                        to_date = input("Enter To Date (DD-MM-YYYY):-")
+                        if (validateField([],to_date,"date")):
+                            validated = True
+                        else:
+                            validated = False
+                            print("Invalid Date Format. Please Enter Date in DD-MM-YYYY format")
+                    statementList = get_transaction_in_range(data,logged_in_account,from_date,to_date)
+                    print(statementList)
+                    print_table(statementList)
+                    print("\n\n")
+                    input("Press Any Key To Return") 
+                elif(user_action == "3"):
+                    print("Maintain User Account")
+                    acct_no = logged_in_account
+                    if acct_no and acct_no != "":
+                        update_account_details(data,acct_no)
+                        acct_no = ""
+                        
