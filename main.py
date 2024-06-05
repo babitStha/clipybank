@@ -9,7 +9,7 @@ data = {
         'auth':{
             'username':'username',
             'password':'aaaaaa',
-            'role':'STAFF',
+            'role':'SUPERUSER',
         },
         'info':{
             'first_name':'SuperUser',
@@ -42,16 +42,9 @@ data = {
 
 }
 
-def create_transaction(maindata:dict,acct_num:str):
-    tran_account =maindata[acct_num]
-    available_bal = tran_account.get("account").get("balance")
-    print("Your Available Balance is", available_bal)
-    print(" 1. WithDraw :")
-    print(" 2. Deposit :")
-    action = ("Please Choose an Option")
-    print(acct_num)
 
-create_transaction(data,"01200300040000")
+
+
 
 #read and store file content in dict if exixts else create file with default
 data_file = "./data.txt"
@@ -64,19 +57,19 @@ else:
         my_file.write(str(data))
 
 
+# create_transaction(data,"01200300040000")
+# transaction_keys =list(data['01200300040000'].get('transaction'))
+# print(transaction_keys)
 
-transaction_keys =list(data['01200300040000'].get('transaction'))
-print(transaction_keys)
-
-for key in transaction_keys:
-    print(data['01200300040000'].get('transaction').get(key))
+# for key in transaction_keys:
+#     print(data['01200300040000'].get('transaction').get(key))
 
 
 
-list_acct_num = list(data.keys())
-list_acct_num.sort()
-last_acct_num = list_acct_num[-1]
-print(last_acct_num)
+# list_acct_num = list(data.keys())
+# list_acct_num.sort()
+# last_acct_num = list_acct_num[-1]
+# print(last_acct_num)
 
 run = True
 #os.system('cls')
@@ -149,12 +142,15 @@ while run:
                 validInputs = ["1","0"]
                 if user_action == "0":
                     is_logged_in = False
+                    run_Login_loop = False
                     continue
                 elif validateField(validInputs,user_action):
                     is_logged_in = True
+                    run_Login_loop = False
                 else:
                     print("Invalid Input")
                     is_logged_in = False
+                    run_Login_loop = False
                 
                 print(is_logged_in)
                 if (user_action == "1"):
@@ -162,6 +158,7 @@ while run:
                     data[created_acct] = instance[created_acct]
                     print(f"Staff Account Created.\n Account Number :{created_acct} \n password :{default_password}")
                     save_data_in_file('./data.txt',data)
+                    input("Press Any Key To Continue")
         #STAFF LOGIN
         elif(login_role == "STAFF"):
             while is_logged_in:
@@ -176,6 +173,7 @@ while run:
                 validInputs = ["1","0","2","3"]
                 if user_action == "0":
                     is_logged_in = False
+                    run_Login_loop = False
                     continue
                 elif validateField(validInputs,user_action):
                     is_logged_in = True
@@ -188,6 +186,7 @@ while run:
                     data[created_acct] = instance[created_acct]
                     print(f"Customer Account Created.\n Account Number :{created_acct} \n password :{default_password}")
                     save_data_in_file('./data.txt',data)
+                    input("Press Any Key To Continue")
                 elif(user_action == "2"):
                     validated = False
                     while not validated:
@@ -244,6 +243,7 @@ while run:
                 validInputs = ["1","0","2","3"]
                 if user_action == "0":
                     is_logged_in = False
+                    run_Login_loop = False
                     continue
                 elif validateField(validInputs,user_action):
                     is_logged_in = True
@@ -253,9 +253,8 @@ while run:
                 
                 if (user_action == "1"):
                     #Create a Transaction
-                    create_transaction(data[logged_in_account])
+                    create_transaction(data,logged_in_account)
                     
-                    save_data_in_file('./data.txt',data)
                 elif(user_action == "2"):
                     validated = False
                     while not validated:

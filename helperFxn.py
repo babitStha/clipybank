@@ -8,7 +8,6 @@ def create_account_instance(data,**kwargs):
     last_acct_num = list_acct_num[-1]
     next_acct_num = format(int(last_acct_num) + 1,'014d')
     validated = False
-    password = ""
     user_name = input("Enter username:-")
     first_name = input("Enter First Name:-")
     last_name = input("Enter Last Name:")
@@ -38,7 +37,7 @@ def create_account_instance(data,**kwargs):
     next_acct_num:{
             'auth':{
                 'username':user_inputs.get('username',''),
-                'password':user_inputs.get('password',''), # need to call fxn to generateRandom pass
+                'password':generate_password(), # need to call fxn to generateRandom pass
                 'role':kwargs.get('role',''),
             },
             'info':{
@@ -121,10 +120,8 @@ def inRange(value,start,end):
 def get_transaction_in_range(data:dict,acct_no,fromDate,toDate):
     print(data)
     transaction_keys =list(data[acct_no].get('transaction'))
-    print(transaction_keys)
     statementList = []
     for key in transaction_keys:
-        print(key)
         date_str = str(data[acct_no].get('transaction').get(key).get('date'))
         tran_date = datetime.strptime(date_str,'%d-%m-%Y')
         if(tran_date >= datetime.strptime(fromDate,'%d-%m-%Y')  and tran_date <= datetime.strptime(toDate,'%d-%m-%Y')):
@@ -208,10 +205,47 @@ def update_account_details(data,acct_num):
             print("INvalid Input")
         input("Press Any Key To Continue")
 
+def generate_password(length=8):
+    random_bytes = os.urandom(length)
+    hex_string = random_bytes.hex()[:length]
+    return hex_string
 
-def create_transaction(acct_details:dict):
-    acctnum = acct_details.keys()
-    print(acctnum)
+def create_transaction(data,acct_num):
+    print("CCREATE TRANSACTION")
+    while True:
+        avaliableBal = data[acct_num]['account'].get('balance','0')
+        print("You have $ ",avaliableBal)
+        print("1.Withdraw Balance")
+        print("2.Deposit Balance")
+        print("0.Go Back")
+        choice = input("Enter Your Choice :- ")
+        print(choice)
+        if choice == "1" or choice =="2":
+            try:
+                tranAmt = int(input(f"Enter a Amount to {"Withdraw" if choice=="1" else "Deposit"}:- "))
+                remarks = input("Enter Transaction Remarks:- ")
+            except ValueError:
+                print("Incorrect Amount Format.Couldnt Create Transaction")
+                break
+            if int(tranAmt)> avaliableBal and choice == "1":
+                print("You Dont Have Sufficent Balance. Couldnt Create Transaction")
+                break
+            tranId = str(datetime.now().strftime('%d%m%y%H%M%S'))
+            data[acct_num]['transaction'][tranId] ={
+                    'amount':tranAmt,
+                'type':'D' if choice =="1" else "C",
+                'date':datetime.now().strftime('%d-%m-%Y'),
+                'remarks':remarks
+                }
+            data[acct_num]['account']['balance']  = int(avaliableBal) - tranAmt if choice =="1" else int(avaliableBal) + tranAmt
+            save_data_in_file('./data.txt',data)
+            print("Transaction Created Suesfully")
+            print("Your New Available Balance is",data[acct_num]['account'].get('balance','0'))
+            input("Press Any Key To Continue")
+            break
+
+
+
 
 
     
