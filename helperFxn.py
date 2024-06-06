@@ -33,11 +33,12 @@ def create_account_instance(data,**kwargs):
             validated = False
     user_inputs = {'username':user_name,'first_name':first_name,'last_name':last_name,'phone_no':phone_no,'email':email,'date_of_birth':date_of_birth,
                    'address':address,'acct_type':acct_type}
+    password = generate_password()
     instance = {
     next_acct_num:{
             'auth':{
                 'username':user_inputs.get('username',''),
-                'password':generate_password(), # need to call fxn to generateRandom pass
+                'password':password,
                 'role':kwargs.get('role',''),
             },
             'info':{

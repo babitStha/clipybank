@@ -71,11 +71,25 @@ else:
 # last_acct_num = list_acct_num[-1]
 # print(last_acct_num)
 
-run = True
+
 #os.system('cls')
+total_col = 50
+left_space = 10
+projectDetails = [" BANKING SYSTEM PROJECT  "," Team Members    "," A.Shahnawaj Hussain (Leader)    "," B.Babit Shrestha    "]
+print("#"*total_col)
+for heading in projectDetails:
+    row = "*"*left_space + heading + "*"*(total_col-left_space-len(heading))
+    print(row)
+print("#"*total_col)
+input("Press Any Key To Start")
+
+os.system('cls')
+
 greet()
+run = True
 while run:
 #Choose Role to Login
+    print("Login Menu")
     print("1. Login as SuperUser")
     print("2. Login as Staff")
     print("3. Login as Customer")
@@ -99,7 +113,7 @@ while run:
 
     #Loop For Logging in User
     run_Login_loop = True
-    
+    os.system('cls')
     while run_Login_loop:
         #os.system('cls')
         #Default Variable Initialize for Login
@@ -133,9 +147,8 @@ while run:
 
 #LOGIN COMPLETE
         if(login_role == "SUPERUSER"):
+            os.system('cls')
             while is_logged_in:
-                print("is_logged_in Loop")
-                #os.system('cls')
                 print("1.Create Staff Account")
                 print("0.Go Back")
                 user_action = input()
@@ -161,6 +174,7 @@ while run:
                     input("Press Any Key To Continue")
         #STAFF LOGIN
         elif(login_role == "STAFF"):
+            os.system('cls')
             while is_logged_in:
                 print("is_logged_in Loop")
                 #os.system('cls')
@@ -231,6 +245,7 @@ while run:
                         update_account_details(data,acct_no)
                         acct_no = ""
         elif(login_role == "CUSTOMER"):
+            os.system('cls')
             while is_logged_in:
                 print("is_logged_in Loop")
                 #os.system('cls')
