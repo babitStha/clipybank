@@ -114,9 +114,15 @@ while run:
     #Loop For Logging in User
     run_Login_loop = True
     os.system('cls')
+    attempt = 3
     while run_Login_loop:
         #os.system('cls')
         #Default Variable Initialize for Login
+        print("YOu have",attempt,"attempt left")
+        if(attempt<=0):
+            print("You have reached your Maximum attempt exiting..")
+            run = False
+            break
         is_acct_num_valid = False
         is_password_valid = False
         is_logged_in = False
@@ -126,7 +132,6 @@ while run:
             continue
         password = input("Enter Your Account Password or 0 to go back:-")
         if password == "0":
-            run_Login_loop = False
             continue
         is_acct_num_valid = account in list(data.keys())
         if is_acct_num_valid:
@@ -137,9 +142,12 @@ while run:
             is_logged_in = True
             logged_in_user_name = get_username(data,account)
             logged_in_account = account
+            is_logged_in=True
         else:
             print(f"Invalid Credintials For {login_role} login. Please Try again with correct credentials")
             is_logged_in = False
+            attempt-=1
+            continue
 
         if is_logged_in:
             greet(logged_in_user_name)
@@ -165,7 +173,6 @@ while run:
                     is_logged_in = False
                     run_Login_loop = False
                 
-                print(is_logged_in)
                 if (user_action == "1"):
                     [instance,created_acct,default_password] = create_account_instance(data,role="STAFF")
                     data[created_acct] = instance[created_acct]
@@ -176,7 +183,6 @@ while run:
         elif(login_role == "STAFF"):
             os.system('cls')
             while is_logged_in:
-                print("is_logged_in Loop")
                 #os.system('cls')
                 print("1.   Create Create Customer Account :")
                 print("2.   Print Acount Statement :")
