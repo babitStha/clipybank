@@ -119,7 +119,6 @@ def inRange(value,start,end):
     
 
 def get_transaction_in_range(data:dict,acct_no,fromDate,toDate):
-    print(data)
     transaction_keys =list(data[acct_no].get('transaction'))
     statementList = []
     for key in transaction_keys:
@@ -159,6 +158,7 @@ def update_account_details(data,acct_num):
         print("5    Change Email :")
         print("6    Change Date of Birth :")
         print("7    Change Address :")
+        print("8    Change password :")
         print("0    Save and Exit :")
         user_input =input()
         if user_input == "1":
@@ -197,6 +197,10 @@ def update_account_details(data,acct_num):
             print(f"Current Address {data[acct_num]['info']['address']}")
             address = input("Enter New Address :")
             data[acct_num]['info']['address'] = address
+        elif user_input == "8":
+            #print(f"Current Address {data[acct_num]['info']['address']}")
+            password = input("Enter New Password :")
+            data[acct_num]['auth']['password'] = password
         elif user_input == "0":
             save_data_in_file('./data.txt',data)
             print("Changes Saved. Exiting .... ")

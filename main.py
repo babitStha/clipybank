@@ -233,7 +233,7 @@ while run:
                             validated = False
                             print("Invalid Date Format. Please Enter Date in DD-MM-YYYY format")
                     statementList = get_transaction_in_range(data,acct_no,from_date,to_date)
-                    print(statementList)
+                    os.system("cls")
                     print_table(statementList)
                     print("\n\n")
                     input("Press Any Key To Return") 
